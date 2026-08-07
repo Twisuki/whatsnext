@@ -1,0 +1,7 @@
+{
+  "name": "whatsnext",
+  "version": "0.1.0",
+  "description": "管理长期开发任务的 skill",
+  "license": "MIT",
+  "skills": "./skills/"
+}

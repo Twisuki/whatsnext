@@ -1,0 +1,12 @@
+{
+  "name": "whatsnext-marketplace",
+  "description": "Local marketplace for the whatsnext skill",
+  "plugins": [
+    {
+      "name": "whatsnext",
+      "description": "管理长期开发任务的 skill",
+      "version": "0.1.0",
+      "source": "./src"
+    }
+  ]
+}
