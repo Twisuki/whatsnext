@@ -1,6 +1,9 @@
 {
   "name": "whatsnext-marketplace",
   "description": "Local marketplace for the whatsnext skill",
+  "owner": {
+    "name": "Twisuki"
+  },
   "plugins": [
     {
       "name": "whatsnext",
