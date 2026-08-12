@@ -9,17 +9,34 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 
 ## 路由
 
-先完整读对应的 reference, 再动作:
+每个动作有对应命令与 reference. 先完整读对应的 reference, 再动作:
 
-- 初始化计划区(仓库首次使用, 开第一个任务前):[references/init.md](references/init.md)
-- 开新任务:[references/start.md](references/start.md)
-- 继续 / 恢复 / 列出任务:[references/continue.md](references/continue.md)
-- 保存进展 / 交接当前 session:[references/save.md](references/save.md)
-- 完成任务:[references/finish.md](references/finish.md)
-- 搁置任务:[references/stop.md](references/stop.md)
-- 沉淀可复用经验:[references/promote.md](references/promote.md)
+| 情境 | 命令 | reference |
+| --- | --- | --- |
+| 初始化计划区(仓库首次使用, 开第一个任务前) | `/wn-init` | [references/init.md](references/init.md) |
+| 开新任务(含从散落材料迁移开任务) | `/wn-start` | [references/start.md](references/start.md) |
+| 继续 / 恢复 / 列出任务, 重启已搁置任务 | `/wn-continue` | [references/continue.md](references/continue.md) |
+| 保存进展 / 交接当前 session | `/wn-save` | [references/save.md](references/save.md) |
+| 完成任务 | `/wn-finish` | [references/finish.md](references/finish.md) |
+| 搁置任务 | `/wn-stop` | [references/stop.md](references/stop.md) |
+| 沉淀可复用经验 | `/wn-promote` | [references/promote.md](references/promote.md) |
+
+`/wn` 是总入口: 无参给帮助与计划区现状, 有参按下面的分诊规则理解意图.
 
 开始或继续一个任务后, 在到达里程碑或 session 将结束时应用保存指引. 不要为做仪式而打断有效工作.
+
+## 参数分诊
+
+命令名代表默认动作, 但用户常把本属于别的动作的意图带进参数. 收到命令 + 参数时, 先判断参数意图是否属于本命令:
+
+- **意图与命令一致**: 直接按本命令的 reference 执行.
+- **意图属于另一动作**: 转去按那个动作的 reference 执行, 并说明为何改走它(或提示用户对应的 `/wn-*` 命令). 例:
+  - `/wn-init 从 .docs 迁移` — init 只铺地基不建任务; "从材料迁移开任务"属于 start, 先初始化再转 [start.md](references/start.md) 第 0.5 节.
+  - `/wn 开始做登录页` — 总入口带了开任务意图, 转 [start.md](references/start.md).
+  - `/wn 上次那个任务到哪了` — 转 [continue.md](references/continue.md).
+- **无参的 `/wn`**: 给帮助与计划区现状, 不臆测动作.
+
+宁可先理解意图再分诊, 不机械执行, 也不忽略用户参数. 分诊后仍走对应 reference 的完整步骤.
 
 ## 目录模型
 
