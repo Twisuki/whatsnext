@@ -93,10 +93,10 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 任务被开始, 恢复, 或给出实质性新方向时, 在执行前检查是否有适用的项目经验, 无需等用户点名:
 
 1. 读任务已链接的相关 knowledge.
-2. 扫 `.whatsnext/knowledge/` 下各文件的 frontmatter(`title` / `label` / `tags` / `description`), 与用户请求 + 任务目标比对; 文件名 / 元数据不足以判断时, 才在可能相关的文件内搜正文.
+2. 调 `python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/search_knowledge.py` 扫 `.whatsnext/knowledge/` 各文件 frontmatter(输出 `{knowledge:[{name,title,label,description}]}`, 支持 `--label` 筛 / `--tags` 模糊匹配), 与用户请求 + 任务目标比对; 命中候选后再在文件内按需搜正文. 无 python 时回退直接扫 frontmatter.
 3. 明显相关的才读正文; 都不相关就继续, 不追问经验放在哪.
 
-扫元数据是例行发现, 正文保持懒加载, 不预载无关 knowledge. (任务侧已有 `scan_tasks.py` 消费 frontmatter; knowledge 侧的搜索脚本可同法引入, 免逐个扫.)
+扫元数据是例行发现, 正文保持懒加载, 不预载无关 knowledge.
 
 ## 边界
 

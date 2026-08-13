@@ -1,7 +1,7 @@
 ---
 name: wn-promote
 description: 把任务里验证过的经验沉淀成 .whatsnext/knowledge/ 下可复用的项目经验. 经验满足三门槛时用.
-allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)
+allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/search_knowledge.py *)
 ---
 
 **前置(幂等)**: 确保 whatsnext 契约已在上下文. 若本会话尚未装载, 先 Read `${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/SKILL.md`; 已装载则直接进下一步.

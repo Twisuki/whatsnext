@@ -45,3 +45,12 @@ whatsnext **不维护手写的根索引文件**. 每个任务的真相(状态 / 
   ```
 
   列任务 / 找 Focus / 对账都调它, 省去逐个读文件; `focus` 出现多个即唯一性冲突, 提示修正.
+
+- **脚本** `skills/whatsnext/scripts/search_knowledge.py`(同为纯标准库只读)搜索 `.whatsnext/knowledge/` 各经验 frontmatter:
+
+  ```bash
+  python3 search_knowledge.py [--label hot] [--tags x ...]
+  # => {"knowledge": [{"name","title","label","description"}]}
+  ```
+
+  `--label` 按分类(hot/core/ref)精确筛, `--tags` 在 tags 与 description 里模糊匹配; 供发现相关经验时快速定位, 命中后再读正文.

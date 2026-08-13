@@ -2,7 +2,7 @@
 name: wn-start
 description: 开一个跨 session 的长期任务. 在 .whatsnext/tasks/ 建落脚点并接管 Focus. 用户要开始需持久交接的任务时用.
 argument-hint: [任务描述]
-allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py *)
+allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py *), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/search_knowledge.py *)
 ---
 
 **前置(幂等)**: 确保 whatsnext 契约已在上下文. 若本会话尚未装载, 先 Read `${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/SKILL.md`; 已装载则直接进下一步.
