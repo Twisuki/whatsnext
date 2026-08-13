@@ -12,7 +12,7 @@ whatsnext 无根索引文件, 任务列表与 Focus 的真相在各任务 frontm
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py
 ```
 
-输出 `{tasks: [{dir, status, title}], focus: string[]}`. 参数: `--status active` 只看活跃; `--tags x` 按标签筛. 由此一次拿到"有哪些任务 + 谁是 Focus", 无需读任何单任务文件.
+输出 `{tasks: [{dir, status, title}], focus: string[]}`. 参数: `--status active stopped` 列活跃 + 搁置(常用默认, 见第 2 节); `--tags x` 按标签筛. 由此一次拿到"有哪些任务 + 谁是 Focus", 无需读任何单任务文件.
 
 - `focus` 空数组 = 无 Focus; 单元素 = 当前聚焦; 多元素 = **冲突**(违反唯一约束), 见 **6. 边界**.
 - 脚本报错 / 无 python 时, 回退到直接遍历 `.whatsnext/tasks/*/*/index.md` 读 frontmatter, 不硬依赖脚本.
@@ -29,7 +29,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py
 
 ## 2. 列出任务
 
-直接把脚本输出的任务清单(dir / status / title)+ Focus 呈现给用户, 到此为止. 不加载单任务文件, 不读兄弟文件. 默认用 `--status active` 只列活跃; 用户明确要看归档(done / stopped)时去掉筛选或加对应状态.
+直接把脚本输出的任务清单(dir / status / title)+ Focus 呈现给用户, 到此为止. 不加载单任务文件, 不读兄弟文件. 默认用 `--status active stopped` 列活跃 + 搁置(搁置可重启, 值得让用户看见); 已完成的 done 默认不列, 用户明确要看全部归档时再去掉筛选.
 
 ## 3. 恢复一个任务
 
