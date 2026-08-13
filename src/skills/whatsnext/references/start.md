@@ -1,6 +1,6 @@
 # start - 开新任务
 
-为一个跨 session 的长期任务在 `.whatsnext/tasks/` 里开出落脚点: 选分类, 建任务目录, 写一份极薄的 `index.md` 作为恢复入口, 并在其 frontmatter 标 `focus: true` 接管 Focus. 目标是让任何未来的 session 无需历史对话, 仅凭这几个文件就能复活任务. (无根索引文件, 任务列表与 Focus 由 `scan_tasks.py` 扫描 frontmatter 得出.)
+为一个跨 session 的长期任务在 `.whatsnext/tasks/` 里开出落脚点: 选分类, 调脚手架脚本建目录 + 极薄的 `index.md` 骨架并接管 Focus, 再补人写的简述与文件索引. 目标是让任何未来的 session 无需历史对话, 仅凭这几个文件就能复活任务. (无根索引文件, 任务列表与 Focus 由 `scan_tasks.py` 扫描 frontmatter 得出.)
 
 先判断是否该开: 跨 session, 需交接, 或有多个专题才开; 一次性小改不开, 避免污染计划区. 该开则按下面步骤.
 
@@ -27,51 +27,44 @@ start 依赖已初始化的计划区(`.whatsnext/` 已被 exclude, `tasks/` 目�
 - **任务名**用短横线小写, 简短达意, 如 `add-edit-page` / `request` / `atom`.
 - 合起来如 `.whatsnext/tasks/feat/add-edit-page/`.
 
-## 2. 建任务文件
+## 2. 调脚手架脚本建骨架 + 接管 Focus
 
-`index.md` 必建. 其余基线文件按需:
+用 `new_task.py` 一步建好目录 + `index.md` 骨架, 并自动接管 Focus, 免手工填模板:
 
-- **`index.md`(必需)** — 任务索引与恢复入口, 见第 3 步.
-- **`origin.md`** — 有外部需求(PM / 沟通记录)时建, 逐字存档原文, 不加工.
-- **`plan.md`** — 多阶段任务建, 有序完成度清单.
-- 其余(context / findings / api / test 等)不预建, 推进中按需临场创建并命名, 建后必须回到 `index.md` 文件索引登记.
-
-模板见 [assets/](../assets/): `index.md` / `origin.md` / `plan.md` 三个骨架, 复制后填写.
-
-## 3. 写 index.md
-
-保持极薄, 只含三样:
-
-**frontmatter** — 七个核心字段全必需 + `focus: true`(接管 Focus), 类型与约束见 [frontmatter.md](frontmatter.md). 开新任务的初值:
-
-```yaml
----
-status: active
-progress: 0%
-period: 2026-08-12 - ***
-updated: 2026-08-12
-branch: feat-add-edit-page -> main
-owner: Twisuki
-tags: []
-focus: true
----
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/new_task.py \
+  --category feat --name add-edit-page --title "<标题>" [--tags a b] [--branch ...] \
+  [--period-start yyyy-MM-dd] [--period-end yyyy-MM-dd] [--owner ...]
 ```
 
-- `status` 开新任务恒为 `active`; `progress` 初始 `0%`.
-- `period` 起始填今天, 结束未知用 `***`; `branch` 分支未定可暂填计划名; `tags` 无则 `[]`.
-- `focus: true` 接管 Focus; 因 Focus 全局唯一, 写它前先清掉原 Focus(见第 4 步)。
+脚本行为:
 
-**标题** — frontmatter 之下用 `#` 顶级标题写 `<分类>/<任务名> - <标题>`, 紧跟一段说明本任务要做什么, 结论 / 目标是什么, 作为最快恢复入口.
+- 建 `.whatsnext/tasks/<分类>/<任务名>/index.md`, 写好 frontmatter(status `active` / progress `0%` / `focus: true`, 其余按参数)+ 标题 + 待 AI 补的占位.
+- 缺省值: `updated` 与 `period` 起始 = 系统今天; `period` 结束 = `***`; `branch` = `<分类>-<任务名> -> main`; `owner` = `git config user.name`; `tags` = `[]`.
+- **接管 Focus(脚本自动做)**: 原 Focus 唯一则清掉它、新任务置 focus; 原本无 Focus 则直接接管; 原 Focus 冲突(多个)则只新增不动原来的, 并在输出里返回冲突, 交用户裁决——**读脚本返回的 focus 变更信息并转达用户**.
+- 目录已存在则报错不覆盖.
 
-**文件索引** — `## 文件` 小节列出所有兄弟文件及各自角色. 因文件自由命名, 不登记则新 session 不知该读谁; 每新建一个兄弟文件都要回来补一行.
+**无 python 回退**: 脚本不可用时, 手工建目录 + 按 [frontmatter.md](frontmatter.md) 写 index.md(frontmatter 七字段 + `focus: true` + 标题), 并按第 4 步手工清原 Focus. 模板见 [assets/](../assets/).
 
-## 4. 接管 Focus(清原 Focus)
+## 3. 补 index.md 的人写部分
 
-无根索引文件, 登记新任务 = 建好它的 frontmatter(`focus: true` 已在第 3 步写). 但 Focus 全局唯一, 接管前要先清掉原来的 Focus:
+脚本只铺了骨架, 回到 `index.md` 补两样(保持极薄):
 
-- 调 `scan_tasks.py` 扫出当前 `focus` 列表(见 [resume.md](resume.md) 的脚本调用)。
-- 若已有 Focus 任务, 打开它的 `index.md`, 去掉其 frontmatter 的 `focus` 字段(或置 false)。
-- 新任务保持 `focus: true`. 完成后脚本应只扫出新任务一个 Focus。
-- 若原本无 Focus(如 finish/stop 后悬空), 直接让新任务接管即可。
+- **简述** — 标题下一段, 说明本任务要做什么, 结论 / 目标是什么, 作为最快恢复入口. 替换骨架里的占位.
+- **文件索引** — `## 文件` 小节列出所有兄弟文件及各自角色. 因文件自由命名, 不登记则新 session 不知该读谁; 每新建一个兄弟文件都要回来补一行.
+
+其余基线文件按需建(脚本不建它们):
+
+- **`origin.md`** — 有外部需求(PM / 沟通记录)时建, 逐字存档原文, 不加工.
+- **`plan.md`** — 多阶段任务建, 有序完成度清单.
+- 其余(context / findings / api / test 等)推进中按需临场创建并命名, 建后回 `index.md` 文件索引登记. 模板见 [assets/](../assets/).
+
+## 4. Focus 接管的回退(仅无脚本时)
+
+脚本已自动接管 Focus(第 2 步), 正常无需本步. 仅当走了无 python 回退时手工做:
+
+- 调 `scan_tasks.py` 或直接扫出当前 `focus`; 若有原 Focus 任务, 去掉其 frontmatter 的 `focus` 字段.
+- 新任务保持 `focus: true`. 完成后应只有新任务一个 Focus.
+- 原本无 Focus(如 finish/stop 后悬空)则直接接管.
 
 全程只写 Markdown, 不 add / commit / push.

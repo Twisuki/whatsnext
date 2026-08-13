@@ -54,3 +54,12 @@ whatsnext **不维护手写的根索引文件**. 每个任务的真相(状态 / 
   ```
 
   `--label` 按分类(hot/core/ref)精确筛, `--tags` 在 tags 与 description 里模糊匹配; 供发现相关经验时快速定位, 命中后再读正文.
+
+- **脚本** `skills/whatsnext/scripts/new_task.py`(`/wn-start` 调用, **会写文件**)建新任务骨架并接管 Focus:
+
+  ```bash
+  python3 new_task.py --category feat --name x --title "标题" [--tags a b] [--owner ...]
+  # 建 tasks/feat/x/index.md(frontmatter + 标题), 清原 Focus 并置新任务 focus:true
+  ```
+
+  日期缺省取系统今天, `owner` 缺省读 `git config user.name`; 原 Focus 冲突(多个)时只新增不动原来的, 返回冲突交用户裁决. 之后 AI 补简述 / 文件索引 / origin / plan.
