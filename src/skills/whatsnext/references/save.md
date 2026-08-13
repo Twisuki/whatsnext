@@ -23,17 +23,17 @@
 **其余兄弟文件**(origin / findings / api / context 等)
 - 只在本 session 产生了该文件负责的新内容时才写. origin 是存档, 一般只增不改.
 
-**根 `tasks/index.md`**
-- 仅当该任务的状态列变了才更新对应行. Focus 处理见第 4 节.
+**无根索引文件**
+- whatsnext 不维护手写的 `tasks/index.md`. frontmatter 即真相, 任务列表 / 状态 / Focus 由 `scan_tasks.py` 扫描现算. save 只动 frontmatter 与兄弟文件, 没有"更新根索引"这一步.
 
 ## 3. 现实与文档对账
 
-resume 恢复时若记下了"git 现实 vs 文档"的偏差(分支不符, 有未提交改动, 进度对不上), save 是消解它的授权时机: 核对当前仓库实况, 把 frontmatter 的 `branch` / `progress` 等更新到与现实一致. 这是 SKILL.md "现实与文档不符时, 下次授权保存再更新"的落点.
+resume 恢复时若记下了"git 现实 vs 文档"的偏差(分支不符, 有未提交改动, 进度对不上), save 是消解它的授权时机: 核对当前仓库实况(可用脚本快照对照), 把 frontmatter 的 `branch` / `progress` 等更新到与现实一致. 这是 SKILL.md "现实与文档不符时, 下次授权保存再更新"的落点.
 
 ## 4. Focus 处理
 
 - **默认不动 Focus**. Focus 是导航状态, 不该被每次 save 悄悄改写.
-- 仅当用户本次明确在做另一个任务, 或明说"聚焦切到 X"时, 才更新根 `tasks/index.md` 的 Focus 标记: 新任务标 `active·focus`, 原 Focus 去标. 同时只能一个 Focus.
+- 仅当用户本次明确在做另一个任务, 或明说"聚焦切到 X"时, 才改 frontmatter 的 `focus`: 目标任务加 `focus: true`, 原 Focus 任务去掉 `focus`. 同时只能一个 Focus(改完可调脚本确认 `focus` 只剩一个).
 
 ## 5. 边界
 

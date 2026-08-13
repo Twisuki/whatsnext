@@ -2,7 +2,7 @@
 name: wn-stop
 description: 搁置一个 whatsnext 任务(可逆), 记录搁置原因与重启条件并归档. 仅在用户明确要暂停 / 放弃任务时用.
 argument-hint: [任务名, 可选]
-allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)
+allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py *)
 ---
 
 **前置(幂等)**: 确保 whatsnext 契约已在上下文. 若本会话尚未装载, 先 Read `${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/SKILL.md`; 已装载则直接进下一步.

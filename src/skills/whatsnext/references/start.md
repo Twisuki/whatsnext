@@ -1,6 +1,6 @@
 # start - 开新任务
 
-为一个跨 session 的长期任务在 `.whatsnext/tasks/` 里开出落脚点: 选分类, 建任务目录, 写一份极薄的 `index.md` 作为恢复入口, 并在根 `index.md` 登记新任务, 接管 Focus. 目标是让任何未来的 session 无需历史对话, 仅凭这几个文件就能复活任务.
+为一个跨 session 的长期任务在 `.whatsnext/tasks/` 里开出落脚点: 选分类, 建任务目录, 写一份极薄的 `index.md` 作为恢复入口, 并在其 frontmatter 标 `focus: true` 接管 Focus. 目标是让任何未来的 session 无需历史对话, 仅凭这几个文件就能复活任务. (无根索引文件, 任务列表与 Focus 由 `scan_tasks.py` 扫描 frontmatter 得出.)
 
 先判断是否该开: 跨 session, 需交接, 或有多个专题才开; 一次性小改不开, 避免污染计划区. 该开则按下面步骤.
 
@@ -8,7 +8,7 @@
 
 ## 0. 确保计划区就绪
 
-start 依赖已初始化的计划区(`.whatsnext/` 已被 exclude, `tasks/index.md` 存在). 若尚未初始化, 先借道 [init.md](init.md) 补齐, 再继续. init 幂等, 已就绪则无副作用.
+start 依赖已初始化的计划区(`.whatsnext/` 已被 exclude, `tasks/` 目录存在). 若尚未初始化, 先借道 [init.md](init.md) 补齐, 再继续. init 幂等, 已就绪则无副作用.
 
 ## 0.5. 从已有材料开任务(可选)
 
@@ -18,8 +18,6 @@ start 依赖已初始化的计划区(`.whatsnext/` 已被 exclude, `tasks/index.
 - **原文归 origin**: 若材料是外部需求 / 沟通记录, 值得逐字留存, 抄进 `origin.md`; 加工后的结论归 index.
 - **散料多, 明显分属不同目标**时, 拆成多个任务各自 start, 不硬塞进一个.
 - **源文件留原地**: 收编是"读进来整理", 不删不移原文件. whatsnext 只管 `.whatsnext/` 内的落位.
-
-start 依赖已初始化的计划区(`.whatsnext/` 已被 exclude, `tasks/index.md` 存在). 若尚未初始化, 先借道 [init.md](init.md) 补齐, 再继续. init 幂等, 已就绪则无副作用.
 
 ## 1. 建任务路径
 
@@ -44,7 +42,7 @@ start 依赖已初始化的计划区(`.whatsnext/` 已被 exclude, `tasks/index.
 
 保持极薄, 只含三样:
 
-**frontmatter** — 七字段全必需, 类型与约束见 [frontmatter.md](frontmatter.md). 开新任务的初值:
+**frontmatter** — 七个核心字段全必需 + `focus: true`(接管 Focus), 类型与约束见 [frontmatter.md](frontmatter.md). 开新任务的初值:
 
 ```yaml
 ---
@@ -55,21 +53,25 @@ updated: 2026-08-12
 branch: feat-add-edit-page -> main
 owner: Twisuki
 tags: []
+focus: true
 ---
 ```
 
 - `status` 开新任务恒为 `active`; `progress` 初始 `0%`.
 - `period` 起始填今天, 结束未知用 `***`; `branch` 分支未定可暂填计划名; `tags` 无则 `[]`.
+- `focus: true` 接管 Focus; 因 Focus 全局唯一, 写它前先清掉原 Focus(见第 4 步)。
 
 **标题** — frontmatter 之下用 `#` 顶级标题写 `<分类>/<任务名> - <标题>`, 紧跟一段说明本任务要做什么, 结论 / 目标是什么, 作为最快恢复入口.
 
 **文件索引** — `## 文件` 小节列出所有兄弟文件及各自角色. 因文件自由命名, 不登记则新 session 不知该读谁; 每新建一个兄弟文件都要回来补一行.
 
-## 4. 更新根 index.md
+## 4. 接管 Focus(清原 Focus)
 
-`.whatsnext/tasks/index.md` 的活跃任务表必须登记新任务:
+无根索引文件, 登记新任务 = 建好它的 frontmatter(`focus: true` 已在第 3 步写). 但 Focus 全局唯一, 接管前要先清掉原来的 Focus:
 
-- 加一行: 任务(链接到任务 `index.md`)/ 状态 / 说明.
-- **Focus 唯一**: 开新任务通常即接管 Focus, 把 Focus 标记移到新任务(如状态列标 `active·focus`), 原 Focus 任务去标. Focus 是"当前聚焦哪个", 同时只能一个, 是导航而非任务状态.
+- 调 `scan_tasks.py` 扫出当前 `focus` 列表(见 [resume.md](resume.md) 的脚本调用)。
+- 若已有 Focus 任务, 打开它的 `index.md`, 去掉其 frontmatter 的 `focus` 字段(或置 false)。
+- 新任务保持 `focus: true`. 完成后脚本应只扫出新任务一个 Focus。
+- 若原本无 Focus(如 finish/stop 后悬空), 直接让新任务接管即可。
 
 全程只写 Markdown, 不 add / commit / push.

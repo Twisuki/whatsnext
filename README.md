@@ -31,3 +31,17 @@
 | `/wn-finish` | 完成任务并归档 |
 | `/wn-stop` | 搁置任务(可逆) |
 | `/wn-promote` | 把验证过的经验沉淀到 `.whatsnext/knowledge/` |
+
+## 真相来源: frontmatter + 扫描脚本
+
+whatsnext **不维护手写的根索引文件**. 每个任务的真相(状态 / 进度 / 是否聚焦)都在自己 `index.md` 的 frontmatter; 任务列表与 Focus 由扫描脚本实时算出, 从根上避免"手写台账与磁盘漂移".
+
+- **Focus** 是 frontmatter 的 `focus: true` 字段, 全局唯一(同时只一个任务聚焦)。
+- **脚本** `skills/whatsnext/scripts/scan_tasks.py`(纯 Python 标准库, 只读)扫描 `.whatsnext/tasks/` 各 frontmatter, 输出 JSON:
+
+  ```bash
+  python3 scan_tasks.py [--status active ...] [--tags x ...]
+  # => {"tasks": [{"dir","status","title"}], "focus": ["feat/x"]}
+  ```
+
+  列任务 / 找 Focus / 对账都调它, 省去逐个读文件; `focus` 出现多个即唯一性冲突, 提示修正.

@@ -1,6 +1,6 @@
 # finish - 完成任务
 
-任务正常终结: 活干完了, 把 `status` 落到 `done`, 从活跃列表移入已归档, 文件留原地. 与搁置(主动暂停 / 放弃)语义不同, 那走 [stop.md](stop.md).
+任务正常终结: 活干完了, 把 `status` 落到 `done`, 文件留原地. 与搁置(主动暂停 / 放弃)语义不同, 那走 [stop.md](stop.md). 无根索引文件——"归档"= 改 frontmatter 的 status, 之后脚本按 status 过滤自然把它排除出活跃列表, 无需搬任何表行.
 
 终态基本单向(done 之后一般不回退), 所以落 done 前先把关, 再收尾, 再归档.
 
@@ -18,24 +18,20 @@
 
 ## 3. 状态流转(finish 独有)
 
-在任务 `index.md` frontmatter:
+只改任务 `index.md` frontmatter, 不动别处:
 
 - `status`: `active` → `done`.
 - `progress`: 归到 `100%`.
 - `period`: 结束端从 `***` 落成完成日期(取真实当天), 如 `2026-08-12 - 2026-08-20`.
 - `updated`: 刷成当天日期.
+- `focus`: 若该任务是当前 Focus, 去掉 `focus` 字段(或置 false)——见第 4 节.
 
-## 4. 移出活跃列表
+改完 status 即"归档": 脚本 `scan_tasks.py --status active` 不再列出它, 文件留原地不删不移.
 
-在根 `tasks/index.md`:
+## 4. Focus 处理
 
-- 把该任务行从"## 活跃任务"表移入"## 已归档"表, 状态列记 `done`.
-- **文件留原地**: 任务目录与所有文件不删不移, 仅根索引的归属变了.
-
-## 5. Focus 处理
-
-- 若被 finish 的任务正是当前 Focus, 归档后 Focus 悬空: **清空 Focus, 并提示用户下一个聚焦谁**, 不自行挑选(与 resume 的"Focus 缺失不擅自挑一个"一致).
-- 若被 finish 的任务不是当前 Focus, Focus 不受影响.
+- 若被 finish 的任务正是当前 Focus, 去掉其 frontmatter 的 `focus` 后 Focus 悬空: **提示用户下一个聚焦谁**, 不自行挑选(与 resume 的"Focus 缺失不擅自挑一个"一致). 不把 `focus` 转移到别的任务。
+- 若被 finish 的任务不是当前 Focus(其 frontmatter 本就无 focus), Focus 不受影响.
 
 ## 边界
 

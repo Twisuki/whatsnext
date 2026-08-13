@@ -2,7 +2,7 @@
 name: wn
 description: whatsnext 唯一智能入口. 无参给帮助与计划区现状; 带描述则按意图智能分诊, 可组合多动作完成. 不确定用哪个动作, 或想一句话交办时用.
 argument-hint: [想做什么, 可选]
-allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)
+allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py *)
 ---
 
 **前置(幂等)**: 确保 whatsnext 契约已在上下文. 若本会话尚未装载(上下文里没有主 SKILL.md 的路由/契约内容), 先 Read `${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/SKILL.md`; 已装载则直接进下一步.
@@ -25,4 +25,4 @@ allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)
    - `/wn-finish` — 完成任务
    - `/wn-stop` — 搁置任务
    - `/wn-promote` — 沉淀经验
-3. 报当前计划区状态: 有没有 `.whatsnext/tasks/index.md`; 有则读出当前 Focus 与活跃任务; 没有则提示可先 `/wn-init`.
+3. 报当前计划区状态: 有没有 `.whatsnext/tasks/` 目录; 有则调 `python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py --status active stopped` 读出活跃 + 搁置任务与当前 Focus(默认不列已完成的 done, 减少归档噪音; 用户明确要看全部再去掉筛选); 没有则提示可先 `/wn-init`.

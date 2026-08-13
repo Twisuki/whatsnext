@@ -52,16 +52,18 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 
 ```text
 .whatsnext/
-  tasks/
-    index.md               计划索引: 活跃任务表 + 唯一 Focus 标记
+  tasks/                   (无根索引文件; 任务列表与 Focus 由脚本扫描 frontmatter 现算)
     <分类>/<任务名>/
       index.md             任务索引:frontmatter 元数据 + 标题与简述 + 文件索引
       origin.md            需求原文逐字存档(有外部需求时)
       plan.md              有序完成度清单(多阶段任务)
       <其他>.md            LLM 按需命名的兄弟文件, 须在 index 文件索引登记
   knowledge/<title>.md    已验证, 可复用, 自包含的经验, 一条一个文件, 扁平不分层, 与 tasks 并列
+  # scripts 随 plugin 分发于 skills/whatsnext/scripts/, 非计划区内容
 ```
 
+- **无根索引**: `tasks/` 下不放手写索引文件. 真相唯一来源是各任务 `index.md` 的 frontmatter, 由 `scan_tasks.py` 扫描汇总(任务列表 + Focus). 消除"手写台账与磁盘漂移".
+- **任务快照脚本**: `python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py` 输出 `{tasks:[{dir,status,title}], focus:string[]}`, 支持 `--status` / `--tags` 筛选. 列任务 / 找 Focus / 对账都调它, 免逐个读文件; 无 python 时回退直接遍历 frontmatter.
 - **分类 = 分支名**, 枚举锁定:`feat/` `fix/` `refactor/` `docs/`.
 - **每仓库独立**,git-ignored(`.git/info/exclude` 排除 `.whatsnext/`), 不跨仓库共享.
 - **开任务阈值**: 跨 session, 需交接, 或有多个专题才开任务; 一次性小改不开, 避免污染计划区.
@@ -70,7 +72,7 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 
 每个文件单一职责, 不混装. 基线文件(模板见 [assets/](assets/)):
 
-- **`index.md`(必需)** — 任务的索引, 保持极薄. 只含三样:frontmatter 结构化元数据(七字段全必需:`status` 三态 / `progress` / `period` / `updated` / `branch` / `owner` / `tags`, 柔性在取值可留空而非省字段, 类型与约束见 [references/frontmatter.md](references/frontmatter.md)), 标题与简述, 文件索引(列出兄弟文件及各自角色, 因文件自由命名, 不登记则新 session 不知读谁). 不堆原文, 不堆流水, 不装叙述内容.
+- **`index.md`(必需)** — 任务的索引, 保持极薄. 只含三样:frontmatter 结构化元数据(七个核心字段全必需:`status` 三态 / `progress` / `period` / `updated` / `branch` / `owner` / `tags`, 加可选 `focus`——当前聚焦任务标 `focus: true`; 柔性在取值可留空而非省字段, 类型与约束见 [references/frontmatter.md](references/frontmatter.md)), 标题与简述, 文件索引(列出兄弟文件及各自角色, 因文件自由命名, 不登记则新 session 不知读谁). 不堆原文, 不堆流水, 不装叙述内容.
 - **`origin.md`(有外部需求时必需)** — 需求原文 / 沟通记录逐字存档, 按时间线分段, 每段标来源 + 绝对日期. 只存原文, 任何结论/推断归 index.
 - **`plan.md`(多阶段任务推荐)** — 有序完成度清单. 完成标 `- [x]`(可附结果), 废弃或改方向用删除线归档并注明原因与日期, 不重复 index 的目标.
 
@@ -80,8 +82,8 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 
 新 session 恢复一个任务, 按序, 按需读, 其余懒加载:
 
-1. 根 `.whatsnext/tasks/index.md` → 找 Focus(当前聚焦的任务)
-2. 任务 `index.md` → 读 frontmatter(状态 / 进度)+ 标题与简述 + 文件索引
+1. 调 `scan_tasks.py` → 拿任务快照 + Focus(`focus` 数组: 空=无, 单=聚焦, 多=冲突)
+2. 目标任务 `index.md` → 读 frontmatter(状态 / 进度)+ 标题与简述 + 文件索引
 3. 按文件索引**按需**读兄弟文件(origin / plan / 其他)
 4. 实时 git 状态
 5. 懒加载边界: 其余任务, 排查细节, 无关 knowledge 不预读
@@ -94,15 +96,15 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 2. 扫 `.whatsnext/knowledge/` 下各文件的 frontmatter(`title` / `label` / `tags` / `description`), 与用户请求 + 任务目标比对; 文件名 / 元数据不足以判断时, 才在可能相关的文件内搜正文.
 3. 明显相关的才读正文; 都不相关就继续, 不追问经验放在哪.
 
-扫元数据是例行发现, 正文保持懒加载, 不预载无关 knowledge. 后续可引入直接调用的搜索脚本消费这些 frontmatter, 免逐个扫.
+扫元数据是例行发现, 正文保持懒加载, 不预载无关 knowledge. (任务侧已有 `scan_tasks.py` 消费 frontmatter; knowledge 侧的搜索脚本可同法引入, 免逐个扫.)
 
 ## 边界
 
 - **状态三态**:`active` / `done` / `stopped`. 写进 frontmatter, 不写在散文里.
-- **Focus 唯一**: 根 index 同时只有一个 Focus 标记; 它是导航, 不是任务状态. 已完成(`done`)/ 已搁置(`stopped`)的任务移出活跃列表,**文件留原地**.
+- **Focus 唯一**: 同时只有一个任务 frontmatter 标 `focus: true`; 它是导航, 不是任务状态. 脚本扫出多个即冲突, 交 LLM 提示修. 已完成(`done`)/ 已搁置(`stopped`)的任务靠 status 被脚本排除出活跃列表,**文件留原地**.
 - **经验提升三门槛**(缺一不提升): 已验证 + 可能被其他任务复用 + 能写成自包含结论. 一条经验一个文件, 扁平存放, frontmatter 带 `title` / `label` / `tags` / `description` 供搜索(规范见 [references/knowledge.md](references/knowledge.md)). 失败尝试与未决研究留在任务里不提升, 被现实推翻的经验重写或删除. 提升动作见 [references/promote.md](references/promote.md).
 - **一个顶层 session 作为操作者**: 可协调子 agent, 但须把结果汇总回权威的任务文档. 不加跨 session 锁, 认领, 合并协议.
 - **不碰 git**: 整理 `.whatsnext` 绝不 add / commit / push / tag / publish, 除非用户明确要求.
-- **不做**: 编号 ADR 体系,schema 校验器, 必需的索引台账/激活规则/修订历史/陈旧标记/复核台账. (knowledge 的 frontmatter 元数据是可选搜索辅助, 供脚本消费, 非必需台账, 不在此列.)
+- **不做**: 编号 ADR 体系,schema 校验器, 手写的索引台账/激活规则/修订历史/陈旧标记/复核台账. (真相在 frontmatter, 任务列表与 Focus 由脚本**实时扫描**得出——这是现算而非手写台账, 不违背本条; 同理 knowledge 的 frontmatter 也是供脚本消费的元数据, 非台账.)
 
 当现实与文档不符时, 检查仓库, 说明偏差, 在下次授权保存时更新可见文档——优先修复而非因 schema 错误拒绝.

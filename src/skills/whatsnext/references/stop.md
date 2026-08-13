@@ -1,6 +1,6 @@
 # stop - 搁置任务
 
-任务主动暂停或放弃: 把 `status` 落到 `stopped`, 从活跃列表移入已归档, 文件留原地. 与正常完成语义不同, 那走 [finish.md](finish.md).
+任务主动暂停或放弃: 把 `status` 落到 `stopped`, 文件留原地. 与正常完成语义不同, 那走 [finish.md](finish.md). 无根索引文件——"归档"= 改 frontmatter 的 status, 脚本按 status 过滤自然把它排除出活跃列表.
 
 stop 是**可逆**的: 搁置的任务日后可重启回 active(见第 5 节). 所以重点不是把关完成, 而是记清"为什么停, 满足什么条件能重启".
 
@@ -19,23 +19,19 @@ stop 是**可逆**的: 搁置的任务日后可重启回 active(见第 5 节). �
 
 ## 3. 状态流转(stop 独有)
 
-在任务 `index.md` frontmatter:
+只改任务 `index.md` frontmatter:
 
 - `status`: `active` → `stopped`.
 - `progress`: **保留当前值**, 如实反映半途进度, 不归 100%.
 - `period`: 结束端**保留 `***`**——搁置不是终结, 结束未定; 搁置时点由 `updated` + 原因记录承载.
 - `updated`: 刷成当天日期.
+- `focus`: 若该任务是当前 Focus, 去掉 `focus` 字段(或置 false)——见第 4 节.
 
-## 4. 移出活跃列表
+改完 status 即"归档": 脚本 `scan_tasks.py --status active` 不再列出它, 文件留原地.
 
-在根 `tasks/index.md`:
+## 4. Focus 处理
 
-- 把该任务行从"## 活跃任务"表移入"## 已归档"表, 状态列记 `stopped`.
-- **文件留原地**: 任务目录与所有文件不删不移, 仅根索引的归属变了.
-
-## 5. Focus 处理
-
-- 若被 stop 的任务正是当前 Focus, 归档后 Focus 悬空: **清空 Focus, 并提示用户下一个聚焦谁**, 不自行挑选(与 resume 的"Focus 缺失不擅自挑一个"一致).
+- 若被 stop 的任务正是当前 Focus, 去掉其 frontmatter 的 `focus` 后 Focus 悬空: **提示用户下一个聚焦谁**, 不自行挑选(与 resume 的"Focus 缺失不擅自挑一个"一致).
 - 若被 stop 的任务不是当前 Focus, Focus 不受影响.
 
 ## 边界

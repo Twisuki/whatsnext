@@ -1,7 +1,7 @@
 ---
 name: wn-save
 description: 保存当前 session 的进展到 whatsnext 计划区, 供下个 session 无缝接续. 到达里程碑或 session 将结束时用.
-allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)
+allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py *)
 ---
 
 **前置(幂等)**: 确保 whatsnext 契约已在上下文. 若本会话尚未装载, 先 Read `${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/SKILL.md`; 已装载则直接进下一步.

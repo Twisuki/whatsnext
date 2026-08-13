@@ -1,8 +1,8 @@
 ---
 name: wn-finish
-description: 完成一个 whatsnext 任务, 归档到已归档表. 仅在用户明确表示任务已完成时用; 搁置走 /wn-stop.
+description: 完成一个 whatsnext 任务, status 落 done 归档. 仅在用户明确表示任务已完成时用; 搁置走 /wn-stop.
 argument-hint: [任务名, 可选]
-allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)
+allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/scripts/scan_tasks.py *)
 ---
 
 **前置(幂等)**: 确保 whatsnext 契约已在上下文. 若本会话尚未装载, 先 Read `${CLAUDE_PLUGIN_ROOT}/skills/whatsnext/SKILL.md`; 已装载则直接进下一步.
