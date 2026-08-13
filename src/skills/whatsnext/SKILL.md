@@ -7,36 +7,46 @@ description: 用一个私有, 轻量的 Markdown 计划区(.whatsnext/)管理跨
 
 用普通 Markdown 作为长期任务的真相来源, 存放在仓库私有的 `.whatsnext/` 计划区(git-ignored). 用 host 的常规文件工具读写, 不建隐藏状态, 不生成校验产物, 不做并行工作流图. 契约是柔性的:**修复明显缺漏, 而非因格式不合而拒绝**.
 
+## 统一前置: 装载契约(幂等)
+
+所有 `/wn*` 命令的第一步都是确保本契约已在上下文, 再进入各自动作:
+
+- Claude Code 无硬性"已装载"标志位. "已装载" = 本 `SKILL.md` 正文已在当前会话上下文里(本会话早先跑过某个 `/wn*` 读过, 或 skill 被自动加载过).
+- 判断靠自省"这段契约现在在我上下文吗". 是软信号, **不确定时就读**——重读本文件幂等, 代价仅几百 token(`allowed-tools: Read(${CLAUDE_PLUGIN_ROOT}/**)` 令读自身文件免弹窗).
+- 已装载则直接进下一步, 不重复装载.
+
 ## 路由
 
-每个动作有对应命令与 reference. 先完整读对应的 reference, 再动作:
+`/wn` 是**唯一的智能入口**, 也是新会话的起点:
+
+- **`/wn`(无参)** — 返回 whatsnext 是什么 / 怎么用 + 当前计划区状态(有无 `.whatsnext`, 有哪些任务, 哪个活跃). 不臆测动作.
+- **`/wn 描述`(带参)** — 按下面的分诊规则理解描述, 映射到一个或多个动作并按序完成(可组合, 如"结束上一任务 + 开新任务").
+
+七个动作命令**专一**: 各自只做一件事, 先完整读对应 reference 再动作. 收到不属于本动作的参数时, 只提示用户改用 `/wn` 或正确的 `/wn-*`, 不代跑别的动作(见"参数分诊").
 
 | 情境 | 命令 | reference |
 | --- | --- | --- |
 | 初始化计划区(仓库首次使用, 开第一个任务前) | `/wn-init` | [references/init.md](references/init.md) |
 | 开新任务(含从散落材料迁移开任务) | `/wn-start` | [references/start.md](references/start.md) |
-| 继续 / 恢复 / 列出任务, 重启已搁置任务 | `/wn-continue` | [references/continue.md](references/continue.md) |
+| 继续 / 恢复 / 列出任务, 重启已搁置任务 | `/wn-resume` | [references/resume.md](references/resume.md) |
 | 保存进展 / 交接当前 session | `/wn-save` | [references/save.md](references/save.md) |
 | 完成任务 | `/wn-finish` | [references/finish.md](references/finish.md) |
 | 搁置任务 | `/wn-stop` | [references/stop.md](references/stop.md) |
 | 沉淀可复用经验 | `/wn-promote` | [references/promote.md](references/promote.md) |
 
-`/wn` 是总入口: 无参给帮助与计划区现状, 有参按下面的分诊规则理解意图.
-
 开始或继续一个任务后, 在到达里程碑或 session 将结束时应用保存指引. 不要为做仪式而打断有效工作.
 
 ## 参数分诊
 
-命令名代表默认动作, 但用户常把本属于别的动作的意图带进参数. 收到命令 + 参数时, 先判断参数意图是否属于本命令:
+分诊是 `/wn` 独占的职责: 把一段自然语言描述映射到一个或多个动作, 按序执行, 每步走对应 reference 的完整步骤. 例:
 
-- **意图与命令一致**: 直接按本命令的 reference 执行.
-- **意图属于另一动作**: 转去按那个动作的 reference 执行, 并说明为何改走它(或提示用户对应的 `/wn-*` 命令). 例:
-  - `/wn-init 从 .docs 迁移` — init 只铺地基不建任务; "从材料迁移开任务"属于 start, 先初始化再转 [start.md](references/start.md) 第 0.5 节.
-  - `/wn 开始做登录页` — 总入口带了开任务意图, 转 [start.md](references/start.md).
-  - `/wn 上次那个任务到哪了` — 转 [continue.md](references/continue.md).
-- **无参的 `/wn`**: 给帮助与计划区现状, 不臆测动作.
+- `/wn 开始做登录页` — 开任务意图, 走 [start.md](references/start.md).
+- `/wn 上次那个任务到哪了` — 走 [resume.md](references/resume.md).
+- `/wn 结束上一个任务再开个重构任务` — **组合**: 先 [finish.md](references/finish.md) 归档当前 Focus, 再 [start.md](references/start.md) 开新任务. 组合动作靠各 reference 自身的 Focus 处理自然衔接(finish 清空 Focus → start 接管), 不额外传递上下文.
 
-宁可先理解意图再分诊, 不机械执行, 也不忽略用户参数. 分诊后仍走对应 reference 的完整步骤.
+宁可先理解意图再分诊, 不机械执行, 也不忽略描述.
+
+**动作命令(`/wn-*`)不分诊**: 收到的参数只当作本动作的输入. 若参数意图明显不属于本动作, 不代跑、不硬套, 只点明并提示用户改用 `/wn`(智能分诊)或正确的 `/wn-*`.
 
 ## 目录模型
 

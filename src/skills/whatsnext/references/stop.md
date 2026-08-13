@@ -11,7 +11,7 @@ stop 是**可逆**的: 搁置的任务日后可重启回 active(见第 5 节). �
 - **为什么停**: 阻塞在什么(等外部依赖 / 等他人 / 需求待定), 还是暂时让位于更紧急的任务.
 - **重启条件**: 满足什么就能捡回来继续.
 
-这是未来 continue 恢复时判断"能不能, 要不要重启"的依据, 别省.
+这是未来 resume 恢复时判断"能不能, 要不要重启"的依据, 别省.
 
 ## 2. 收尾写入
 
@@ -35,11 +35,11 @@ stop 是**可逆**的: 搁置的任务日后可重启回 active(见第 5 节). �
 
 ## 5. Focus 处理
 
-- 若被 stop 的任务正是当前 Focus, 归档后 Focus 悬空: **清空 Focus, 并提示用户下一个聚焦谁**, 不自行挑选(与 continue 的"Focus 缺失不擅自挑一个"一致).
+- 若被 stop 的任务正是当前 Focus, 归档后 Focus 悬空: **清空 Focus, 并提示用户下一个聚焦谁**, 不自行挑选(与 resume 的"Focus 缺失不擅自挑一个"一致).
 - 若被 stop 的任务不是当前 Focus, Focus 不受影响.
 
 ## 边界
 
 - **不碰 git**: 整理 `.whatsnext` 绝不 add / commit / push, 除非用户明确要求.
-- **可逆**: stopped 不是终态, 日后可由 [continue.md](continue.md) 恢复并重启; 与 finish 的 `done` 单向不同. stop 只负责搁置, 重启是 continue 的事.
+- **可逆**: stopped 不是终态, 日后可由 [resume.md](resume.md) 恢复并重启; 与 finish 的 `done` 单向不同. stop 只负责搁置, 重启是 resume 的事.
 - **日期取真实当天**: `updated` 与原因记录里的日期用执行时的实际日期, 不臆造.

@@ -1,6 +1,6 @@
 # save - 保存进展 / 交接当前 session
 
-把本 session 积累的理解落回 `.whatsnext/` 的文件, 让下一个 session 能靠 continue 无缝复活. save 是 continue 的镜像: continue 只读, save 只写. 核心是**克制**——只重写恢复含义确实变了的文档, 不无脑全刷, 不为做仪式打断有效工作.
+把本 session 积累的理解落回 `.whatsnext/` 的文件, 让下一个 session 能靠 resume 无缝复活. save 是 resume 的镜像: resume 只读, save 只写. 核心是**克制**——只重写恢复含义确实变了的文档, 不无脑全刷, 不为做仪式打断有效工作.
 
 ## 1. 何时 save
 
@@ -28,7 +28,7 @@
 
 ## 3. 现实与文档对账
 
-continue 恢复时若记下了"git 现实 vs 文档"的偏差(分支不符, 有未提交改动, 进度对不上), save 是消解它的授权时机: 核对当前仓库实况, 把 frontmatter 的 `branch` / `progress` 等更新到与现实一致. 这是 SKILL.md "现实与文档不符时, 下次授权保存再更新"的落点.
+resume 恢复时若记下了"git 现实 vs 文档"的偏差(分支不符, 有未提交改动, 进度对不上), save 是消解它的授权时机: 核对当前仓库实况, 把 frontmatter 的 `branch` / `progress` 等更新到与现实一致. 这是 SKILL.md "现实与文档不符时, 下次授权保存再更新"的落点.
 
 ## 4. Focus 处理
 

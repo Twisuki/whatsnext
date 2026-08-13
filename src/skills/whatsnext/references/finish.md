@@ -34,7 +34,7 @@
 
 ## 5. Focus 处理
 
-- 若被 finish 的任务正是当前 Focus, 归档后 Focus 悬空: **清空 Focus, 并提示用户下一个聚焦谁**, 不自行挑选(与 continue 的"Focus 缺失不擅自挑一个"一致).
+- 若被 finish 的任务正是当前 Focus, 归档后 Focus 悬空: **清空 Focus, 并提示用户下一个聚焦谁**, 不自行挑选(与 resume 的"Focus 缺失不擅自挑一个"一致).
 - 若被 finish 的任务不是当前 Focus, Focus 不受影响.
 
 ## 边界
