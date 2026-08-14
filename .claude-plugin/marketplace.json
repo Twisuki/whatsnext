@@ -8,7 +8,7 @@
     {
       "name": "whatsnext",
       "description": "管理长期开发任务的 skill",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "source": "./src"
     }
   ]

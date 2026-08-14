@@ -1,0 +1,20 @@
+{
+  "name": "whatsnext-local",
+  "interface": {
+    "displayName": "whatsnext Local"
+  },
+  "plugins": [
+    {
+      "name": "whatsnext",
+      "source": {
+        "source": "local",
+        "path": "./src"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

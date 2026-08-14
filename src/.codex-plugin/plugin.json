@@ -1,0 +1,21 @@
+{
+  "name": "whatsnext",
+  "version": "1.0.0",
+  "description": "管理长期开发任务的 skill",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "whatsnext",
+    "shortDescription": "用 Markdown 计划区管理跨 session 的长期开发任务",
+    "longDescription": "用仓库私有的 .whatsnext/ Markdown 计划区管理长期开发任务, 让新的 AI session 无需依赖历史对话即可恢复任务在做什么、进展到哪、下一步做什么.",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "继续上次的长期任务.",
+      "为这个项目开一个新的长期任务."
+    ]
+  }
+}
