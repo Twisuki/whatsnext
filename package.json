@@ -1,0 +1,23 @@
+{
+  "name": "whatsnext-dsh",
+  "version": "1.0.0",
+  "description": "DeepSeek Harness 插件: 把 whatsnext 的 /wn 命令族接进 DSH, 用 .whatsnext/ Markdown 计划区管理跨 session 的长期开发任务",
+  "type": "module",
+  "private": true,
+  "main": "src/dsh-plugin/host.js",
+  "exports": {
+    ".": "./src/dsh-plugin/host.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "verify": "node scripts/verify.mjs",
+    "check": "node --check src/dsh-plugin/host.js"
+  },
+  "license": "MIT"
+}
