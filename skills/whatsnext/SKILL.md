@@ -1,6 +1,6 @@
 ---
 name: whatsnext
-description: whatsnext skill(wn), 跨 session 任务管理 skill: 使用 git-ignored 的任务区整理文档, 使新 session 无需依赖历史对话即可恢复任务状态.
+description: "whatsnext skill(wn), 跨 session 任务管理 skill: 使用 git-ignored 的任务区整理文档, 使新 session 无需依赖历史对话即可恢复任务状态."
 ---
 
 # whatsnext
