@@ -12,6 +12,8 @@
 帮我安装 https://github.com/Twisuki/whatsnext 的 skill
 ```
 
+dsh 用户可使用 [whatsnext-dsh](https://github.com/loster12520/whatsnext-dsh) 一键安装.
+
 ## 使用
 
 `/wn` 查看帮助, 任务管理, 或进行智能命令分诊, 例如: `/wn 开始做登录页`, `/wn 昨天做到哪了`.
